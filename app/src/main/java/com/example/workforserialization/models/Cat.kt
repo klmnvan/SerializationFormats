@@ -1,5 +1,6 @@
 package com.example.workforserialization.models
 
+
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -45,6 +45,7 @@ import com.example.workforserialization.models.Book
 import com.example.workforserialization.models.Cat
 import com.example.workforserialization.serialization.SerializeCsv
 import com.example.workforserialization.serialization.SerializeJson
+import com.example.workforserialization.serialization.SerializeXml
 import com.example.workforserialization.ui.theme.Black
 import com.example.workforserialization.ui.theme.Gray1
 import com.example.workforserialization.ui.theme.Gray2
@@ -384,6 +385,10 @@ inline fun <reified T> readFile(path: String, indFormat: Int, context: Context) 
             val oCsv = SerializeCsv()
             return oCsv.listFromCsv<T>(context, "${path}.csv")
         }
+        2 -> {
+            val oXml = SerializeXml()
+            return oXml.listFromXml<T>(context, "${path}.xml")
+        }
     }
     return emptyList()
 }
@@ -434,7 +439,15 @@ fun writeFile(path: String, indFormat: Int, indModel: Int, context: Context){
             }
         }
         2 -> {
-            val oJson = SerializeJson()
+            val oXml = SerializeXml()
+            when(indModel){
+                0 -> {
+                    oXml.listInXml(context, listCats, "${path}.xml")
+                }
+                1 -> {
+                    oXml.listInXml(context, listBooks, "${path}.xml")
+                }
+            }
         }
         3 -> {
             val oJson = SerializeJson()

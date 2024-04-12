@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0"
+agp = "8.2.0"
 kotlin = "1.9.0"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -9,6 +9,7 @@ kotlinxSerializationCore = "1.0.0"
 kotlinxSerializationCsv = "1.2.2"
 kotlinxSerializationCsvVersion = "2.0.0"
 kotlinxSerializationJson = "1.6.0"
+kotlinxSerializationXml = "0.0.1-SNAPSHOT"
 ktorClientAndroid = "2.3.7"
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
@@ -36,6 +37,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 kotlinx-serialization-csv = { module = "org.jetbrains.kotlinx:kotlinx-serialization-csv", version.ref = "kotlinxSerializationCsv" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-xml = { module = "com.ryanharter.kotlinx.serialization:kotlinx-serialization-xml", version.ref = "kotlinxSerializationXml" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }

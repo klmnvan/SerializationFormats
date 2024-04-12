@@ -78,5 +78,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.serialization.kotlinx.serialization.csv)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.xml)
 
+    implementation("io.github.pdvrieze.xmlutil:serialization-android:0.86.3")
+    implementation("io.github.pdvrieze.xmlutil:core-android:0.86.3")
 }
