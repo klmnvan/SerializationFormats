@@ -2,6 +2,7 @@ package com.example.workforserialization.screens
 
 import android.app.Activity
 import android.content.Context
+import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -58,6 +59,7 @@ import com.example.workforserialization.uicreate.FieldComponent
 import com.example.workforserialization.uicreate.TextMedium
 import com.example.workforserialization.uicreate.TextMediumCenter
 import kotlinx.serialization.ExperimentalSerializationApi
+import java.io.File
 import java.util.LinkedList
 import java.util.UUID
 
@@ -66,6 +68,7 @@ import java.util.UUID
 fun StartScreen(activity: Activity?){
 
     var fileName by remember { mutableStateOf("") }
+    var search by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("Сообщение") }
     var content by remember { mutableStateOf("Сообщение") }
     var cats by remember { mutableStateOf<List<Cat>>(listOf()) }
@@ -290,18 +293,22 @@ fun StartScreen(activity: Activity?){
             ButtonBlueGrayMP(
                 {
                     if(buttonIsClicable){
-                        if (task == tasks[0]) {
-                            if(models.indexOf(model) == 0){
-                                books = emptyList()
-                                cats = readFile<Cat>(fileName, formats.indexOf(format), context)
+                        if(fileNameIsCorrect(fileName, context)){
+                            if (task == tasks[0]) {
+                                if (fileIsExist(fileName, format, context)){
+                                    if(models.indexOf(model) == 0){
+                                        books = emptyList()
+                                        cats = readFile<Cat>(fileName, formats.indexOf(format), context)
+                                    }
+                                    if(models.indexOf(model) == 1){
+                                        cats = emptyList()
+                                        books = readFile<Book>(fileName, formats.indexOf(format), context)
+                                    }
+                                }
                             }
-                            if(models.indexOf(model) == 1){
-                                cats = emptyList()
-                                books = readFile<Book>(fileName, formats.indexOf(format), context)
+                            if (task == tasks[1]) {
+                                writeFile(fileName, formats.indexOf(format), models.indexOf(model), context)
                             }
-                        }
-                        if (task == tasks[1]) {
-                            writeFile(fileName, formats.indexOf(format), models.indexOf(model), context)
                         }
                     }
                     else {
@@ -309,73 +316,103 @@ fun StartScreen(activity: Activity?){
                     }
                 }, Modifiers.MDBtnDefaultMP,
                 buttonIsClicable, task)
-
-            if (cats.isNotEmpty()){
-                Text(text = "Считанный лист",
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .padding(horizontal = 24.dp),
-                    fontSize = 20.sp)
-                cats.forEach { cat ->
-                    Card(
+            if(books.isNotEmpty() || cats.isNotEmpty()){
+                TextMedium("Поиск по листу",
+                    Modifier
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 20.dp), 16, Color(Gray1.value)
+                )
+                FieldComponent(search, { search = it }, "Лист 1")
+                if (cats.isNotEmpty()){
+                    Text(text = "Считанный лист",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp)
+                            .padding(vertical = 10.dp)
                             .padding(horizontal = 24.dp),
-                        colors = cardColors(
-                            containerColor = Color(Gray1.value)
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                        defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Text(text = cat.name.toString(),
-                                fontSize = 20.sp,
-                                color = Color(White.value))
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = "${ if(cat.isFluffy == true) "Пушистый" else "Не пушистый"} кот с усами длиной ${cat.mustacheLength} дм.",
-                                fontSize = 14.sp,
-                                color = Color(White.value))
+                        fontSize = 20.sp)
+                    cats.forEach { cat ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                                .padding(horizontal = 24.dp),
+                            colors = cardColors(
+                                containerColor = Color(Gray1.value)
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(text = cat.name.toString(),
+                                    fontSize = 20.sp,
+                                    color = Color(White.value))
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(text = "${ if(cat.isFluffy == true) "Пушистый" else "Не пушистый"} кот с усами длиной ${cat.mustacheLength} дм.",
+                                    fontSize = 14.sp,
+                                    color = Color(White.value))
+                            }
                         }
-                    }
 
+                    }
+                }
+                if (books.isNotEmpty()){
+                    Text(text = "Считанный лист",
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .padding(horizontal = 24.dp),
+                        fontSize = 20.sp)
+                    books.forEach { book ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                                .padding(horizontal = 24.dp),
+                            colors = cardColors(
+                                containerColor = Color(Gray1.value)
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(text = book.title.toString(),
+                                    fontSize = 20.sp,
+                                    color = Color(White.value))
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(text = "Автор: ${book.author}\nЖанр: ${book.genre}\nКоличество страниц: ${book.pageCount}",
+                                    fontSize = 14.sp,
+                                    color = Color(White.value))
+                            }
+                        }
+
+                    }
                 }
             }
-            if (books.isNotEmpty()){
-                Text(text = "Считанный лист",
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .padding(horizontal = 24.dp),
-                    fontSize = 20.sp)
-                books.forEach { book ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp)
-                            .padding(horizontal = 24.dp),
-                        colors = cardColors(
-                            containerColor = Color(Gray1.value)
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Text(text = book.title.toString(),
-                                fontSize = 20.sp,
-                                color = Color(White.value))
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = "Автор: ${book.author}\nЖанр: ${book.genre}\nКоличество страниц: ${book.pageCount}",
-                                fontSize = 14.sp,
-                                color = Color(White.value))
-                        }
-                    }
 
-                }
-            }
         }
     }
-
 }
+
+fun fileNameIsCorrect(filePath: String, context: Context): Boolean{
+    val forbiddenSymb = "\\:?|*()/”\""
+    forbiddenSymb.forEach {
+        if(filePath.contains(it)) {
+            Toast.makeText(context, "Название файла содержит запрещенные символы", Toast.LENGTH_SHORT).show()
+            return false
+        }
+    }
+    return true
+}
+
+
+fun fileIsExist(filePath: String, format: String, context: Context) : Boolean {
+    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${filePath}${format}")
+    return if (file.exists()){
+        true
+    } else {
+        Toast.makeText(context, "Файла не существует", Toast.LENGTH_SHORT).show()
+        false
+    }
+}
+
 
 @OptIn(ExperimentalSerializationApi::class)
 inline fun <reified T> readFile(path: String, indFormat: Int, context: Context) : List<T>{
@@ -469,7 +506,6 @@ fun writeFile(path: String, indFormat: Int, indModel: Int, context: Context){
             }
         }
     }
-
 }
 
 
