@@ -46,6 +46,7 @@ import com.example.workforserialization.models.Cat
 import com.example.workforserialization.serialization.SerializeCsv
 import com.example.workforserialization.serialization.SerializeJson
 import com.example.workforserialization.serialization.SerializeXml
+import com.example.workforserialization.serialization.SerializeYaml
 import com.example.workforserialization.ui.theme.Black
 import com.example.workforserialization.ui.theme.Gray1
 import com.example.workforserialization.ui.theme.Gray2
@@ -56,6 +57,7 @@ import com.example.workforserialization.uicreate.ButtonBlueGrayMP
 import com.example.workforserialization.uicreate.FieldComponent
 import com.example.workforserialization.uicreate.TextMedium
 import com.example.workforserialization.uicreate.TextMediumCenter
+import kotlinx.serialization.ExperimentalSerializationApi
 import java.util.LinkedList
 import java.util.UUID
 
@@ -375,6 +377,7 @@ fun StartScreen(activity: Activity?){
 
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 inline fun <reified T> readFile(path: String, indFormat: Int, context: Context) : List<T>{
     when(indFormat) {
         0 -> {
@@ -389,10 +392,15 @@ inline fun <reified T> readFile(path: String, indFormat: Int, context: Context) 
             val oXml = SerializeXml()
             return oXml.listFromXml<T>(context, "${path}.xml")
         }
+        3 -> {
+            val oYaml = SerializeYaml()
+            return oYaml.listFromYaml<T>(context, "${path}.yaml")
+        }
     }
     return emptyList()
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 fun writeFile(path: String, indFormat: Int, indModel: Int, context: Context){
 
     val listCats: List<Cat> = LinkedList(
@@ -450,7 +458,15 @@ fun writeFile(path: String, indFormat: Int, indModel: Int, context: Context){
             }
         }
         3 -> {
-            val oJson = SerializeJson()
+            val oYaml = SerializeYaml()
+            when(indModel){
+                0 -> {
+                    oYaml.listInYaml(context, listCats, "${path}.yaml")
+                }
+                1 -> {
+                    oYaml.listInYaml(context, listBooks, "${path}.yaml")
+                }
+            }
         }
     }
 
