@@ -4,12 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import android.widget.Toast
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,18 +31,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.util.copy
 import com.example.rediexpressjc.uicreate.Modifiers
 import com.example.workforserialization.models.Book
 import com.example.workforserialization.models.Cat
-import com.example.workforserialization.serialization.SerializeCsv
-import com.example.workforserialization.serialization.SerializeJson
-import com.example.workforserialization.serialization.SerializeXml
-import com.example.workforserialization.serialization.SerializeYaml
+import com.example.workforserialization.serializationClass.SerializeCsv
+import com.example.workforserialization.serializationClass.SerializeJson
+import com.example.workforserialization.serializationClass.SerializeXml
+import com.example.workforserialization.serializationClass.SerializeYaml
 import com.example.workforserialization.ui.theme.Black
 import com.example.workforserialization.ui.theme.Gray1
 import com.example.workforserialization.ui.theme.Gray2
@@ -72,7 +65,9 @@ fun StartScreen(activity: Activity?){
     var message by remember { mutableStateOf("Сообщение") }
     var content by remember { mutableStateOf("Сообщение") }
     var cats by remember { mutableStateOf<List<Cat>>(listOf()) }
+    var catsPreview by remember { mutableStateOf<List<Cat>>(listOf()) }
     var books by remember { mutableStateOf<List<Book>>(listOf()) }
+    var booksPreview by remember { mutableStateOf<List<Book>>(listOf()) }
     var buttonIsClicable by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -324,12 +319,14 @@ fun StartScreen(activity: Activity?){
                 )
                 FieldComponent(search, { search = it }, "Лист 1")
                 if (cats.isNotEmpty()){
+                    catsPreview = cats.filter { cat -> cat.name!!.contains(search, ignoreCase = true)
+                            || cat.mustacheLength.toString().contains(search) }
                     Text(text = "Считанный лист",
                         modifier = Modifier
                             .padding(vertical = 10.dp)
                             .padding(horizontal = 24.dp),
                         fontSize = 20.sp)
-                    cats.forEach { cat ->
+                    catsPreview.forEach { cat ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -360,7 +357,10 @@ fun StartScreen(activity: Activity?){
                             .padding(vertical = 10.dp)
                             .padding(horizontal = 24.dp),
                         fontSize = 20.sp)
-                    books.forEach { book ->
+                    booksPreview = books.filter { book -> book.title!!.contains(search, ignoreCase = true)
+                            || book.pageCount.toString().contains(search)
+                            || book.genre!!.contains(search, ignoreCase = true)}
+                    booksPreview.forEach { book ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()

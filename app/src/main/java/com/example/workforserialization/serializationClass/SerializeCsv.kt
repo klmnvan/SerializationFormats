@@ -1,51 +1,49 @@
-package com.example.workforserialization.serialization
+package com.example.workforserialization.serializationClass
 
 import android.content.Context
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import com.ryanharter.kotlinx.serialization.xml.Xml
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.csv.Csv
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import net.mamoe.yamlkt.Yaml
-import nl.adaptivity.xmlutil.serialization.XML
 import java.io.File
 
-@ExperimentalSerializationApi
-class SerializeYaml {
+class SerializeCsv {
 
-    inline fun <reified T> listInYaml(context: Context, list: List<T>, filePath: String){
+    @OptIn(ExperimentalSerializationApi::class)
+    inline fun <reified T> listInCsv(context: Context, list: List<T>, filePath: String){
 
         try {
-            val yaml = Yaml()
-            val yamlStr: String = yaml.encodeToString(ListSerializer(serializer<T>()),list)
-            Log.d("convert in YAML", yamlStr)
+            val csv =  Csv { delimiter = ',' }
+            val csvStr = csv.encodeToString(ListSerializer(serializer<T>()), list)
+            Log.d("convert in CSV", csvStr)
 
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filePath)
             file.printWriter().use { pw ->
-                pw.print(yamlStr)
+                pw.print(csvStr)
             }
             Toast.makeText(context, "Файл $filePath записан", Toast.LENGTH_SHORT).show()
         } catch (e: Exception){
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
-            Log.d("YAML write error", e.message.toString())
+            Log.d("Csv write error", e.message.toString())
         }
 
     }
 
-    inline fun <reified T> listFromYaml(context: Context, filePath: String): List<T>{
+    @OptIn(ExperimentalSerializationApi::class)
+    inline fun <reified T> listFromCsv(context: Context, filePath: String): List<T>{
         var list: List<T> = listOf()
         try {
+            val csv =  Csv { delimiter = ',' }
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filePath)
             var textInFile = ""
             file.bufferedReader().use {
-                    br -> textInFile = br.readText()
+                br -> textInFile = br.readText()
             }
-            val yaml = Yaml()
-            list = yaml.decodeFromString<List<T>>(textInFile)
+            list = csv.decodeFromString<List<T>>(textInFile)
         } catch (e: Exception){
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
         }

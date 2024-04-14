@@ -1,13 +1,11 @@
-package com.example.workforserialization.serialization
+package com.example.workforserialization.serializationClass
 
 import android.content.Context
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import com.ryanharter.kotlinx.serialization.xml.Xml
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import nl.adaptivity.xmlutil.serialization.XML
 import java.io.File

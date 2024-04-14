@@ -1,46 +1,48 @@
-package com.example.workforserialization.serialization
+package com.example.workforserialization.serializationClass
 
 import android.content.Context
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import com.example.workforserialization.models.Cat
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.serializer
+import net.mamoe.yamlkt.Yaml
 import java.io.File
 
-class SerializeJson {
+@ExperimentalSerializationApi
+class SerializeYaml {
 
-    inline fun <reified T> listInJson(context: Context, list: List<T>, filePath: String){
+    inline fun <reified T> listInYaml(context: Context, list: List<T>, filePath: String){
 
         try {
-            val jsonStr: String = Json.encodeToString(ListSerializer(serializer<T>()), list)
-            Log.d("convert in JSON", jsonStr)
+            val yaml = Yaml()
+            val yamlStr: String = yaml.encodeToString(ListSerializer(serializer<T>()),list)
+            Log.d("convert in YAML", yamlStr)
 
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filePath)
             file.printWriter().use { pw ->
-                    pw.print(jsonStr)
+                pw.print(yamlStr)
             }
             Toast.makeText(context, "Файл $filePath записан", Toast.LENGTH_SHORT).show()
         } catch (e: Exception){
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
-            Log.d("Json write error", e.message.toString())
+            Log.d("YAML write error", e.message.toString())
         }
 
     }
 
-    inline fun <reified T> listFromJson(context: Context, filePath: String): List<T>{
+    inline fun <reified T> listFromYaml(context: Context, filePath: String): List<T>{
         var list: List<T> = listOf()
         try {
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filePath)
             var textInFile = ""
             file.bufferedReader().use {
-                br -> textInFile = br.readText()
+                    br -> textInFile = br.readText()
             }
-            list = Json.decodeFromString<List<T>>(textInFile)
+            val yaml = Yaml()
+            list = yaml.decodeFromString<List<T>>(textInFile)
         } catch (e: Exception){
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
